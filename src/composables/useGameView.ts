@@ -42,43 +42,62 @@ export default function useGameView(canvasRef) {
    * @returns 创建好的场景
    */
   function createScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement) {
+
+    //创建场景
     var scene: BABYLON.Scene = new BABYLON.Scene(engine);
 
+    //摄像机
     const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 10, new BABYLON.Vector3(0, 0, 0), scene);
     camera.setTarget(BABYLON.Vector3.Zero());
     camera.attachControl(canvas, false);
 
+    //水平地面
     var ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 10, height: 10 }, scene);
     const groundMat = new BABYLON.StandardMaterial("groundMat", scene);
     groundMat.diffuseColor = new BABYLON.Color3(0, 1, 0);
     ground.material = groundMat;
     ground.receiveShadows = true;
 
+    //灯光
     const light = new BABYLON.DirectionalLight("dir01", new BABYLON.Vector3(0, -1, 1), scene);
     light.position = new BABYLON.Vector3(10, 10, 0);
     shadowGenerator = new BABYLON.ShadowGenerator(1024, light);
 
+    //六边形地面
     createGround({ x: 20, z: 20 }, 0, 0, scene);
 
     return scene;
   }
 
+  /**
+   * 创建六边形地形
+   * @param size 大小 {x：X坐标长度 z：Z坐标长度}   
+   * @param XPos X轴起始坐标
+   * @param ZPos Z轴起始坐标
+   * @param scene 场景对象
+   */
   function createGround(size: { x: number, z: number }, XPos: float, ZPos: float, scene: BABYLON.Scene) {
     for (let i = 0; i < size.x; i++) {
-      // createColumnLine(size.x,size.z,ZPos,scene);
       if (i % 2 == 0) {
-        createColumnLine(size.z, XPos + (i * 0.75), ZPos + 0.5, scene);
+        createGroundLine(size.z, XPos + (i * 0.75), ZPos + 0.5, scene);
       }
       else {
-        createColumnLine(size.z, XPos + (i * 0.75), ZPos, scene);
+        createGroundLine(size.z, XPos + (i * 0.75), ZPos, scene);
       }
 
     }
   }
 
-  function createColumnLine(length: number, XPos: float, ZPos: float, scene: BABYLON.Scene) {
+  /**
+   * 创建六边形地形柱子线段
+   * @param length 线段长度（六边形数量）
+   * @param XPos 起始坐标X
+   * @param ZPos 起始坐标Y
+   * @param scene 场景对象
+   */
+  function createGroundLine(length: number, XPos: float, ZPos: float, scene: BABYLON.Scene) {
     for (let i = 0; i < length; i++) {
-      createColumn(XPos, ZPos, Math.random() / 2 + 0.5, scene);
+      createGroundObject(XPos, ZPos, Math.random() / 2 + 0.5, scene);
       ZPos += Math.sqrt(3) / 2;
     }
   }
@@ -89,7 +108,7 @@ export default function useGameView(canvasRef) {
    * @param z Z坐标
    * @param height 柱子高度
    */
-  function createColumn(x: number, z: number, height: number, scene: BABYLON.Scene) {
+  function createGroundObject(x: number, z: number, height: number, scene: BABYLON.Scene) {
     const obj = BABYLON.MeshBuilder.CreateCylinder("roof", { diameter: 1, tessellation: 6, height: height }, scene);
     obj.position.x = x;
     obj.position.z = z;
