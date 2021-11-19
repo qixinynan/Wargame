@@ -1,5 +1,4 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import { defineAsyncComponent } from 'vue'
+import { createRouter, createWebHashHistory, createWebHistory, RouteRecordRaw } from 'vue-router'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -15,7 +14,7 @@ const routes: Array<RouteRecordRaw> = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(), //使用历史模式
+  history: createWebHashHistory(), //使用历史模式
   routes
 })
 

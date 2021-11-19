@@ -1,6 +1,5 @@
 <template>
   <div>
-    <p>Game1</p>
     <canvas ref="canvas" id="renderCanvas"></canvas>
   </div>
 </template>
@@ -16,4 +15,10 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+#renderCanvas {
+  display: flex;
+  width: 90%;
+  height: 90%;
+  outline: none;
+}
 </style>
