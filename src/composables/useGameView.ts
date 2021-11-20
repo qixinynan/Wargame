@@ -51,22 +51,49 @@ export default function useGameView(canvasRef) {
     camera.setTarget(BABYLON.Vector3.Zero());
     camera.attachControl(canvas, false);
 
-    //水平地面
-    var ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 10, height: 10 }, scene);
-    const groundMat = new BABYLON.StandardMaterial("groundMat", scene);
-    groundMat.diffuseColor = new BABYLON.Color3(0, 1, 0);
-    ground.material = groundMat;
-    ground.receiveShadows = true;
-
     //灯光
-    const light = new BABYLON.DirectionalLight("dir01", new BABYLON.Vector3(0, -1, 1), scene);
+    const light = new BABYLON.DirectionalLight("dir01", new BABYLON.Vector3(0, -0.1, 0.1), scene);
     light.position = new BABYLON.Vector3(10, 10, 0);
     shadowGenerator = new BABYLON.ShadowGenerator(1024, light);
 
-    //六边形地面
-    createGround({ x: 20, z: 20 }, 0, 0, scene);
+    createRealGround(scene);
+    createSkyBox(scene);
 
     return scene;
+  }
+
+  /**
+   * 创建“真实”地形
+   * @param scene 场景对象
+   */
+  function createRealGround(scene) {
+    let groundMaterial = new BABYLON.StandardMaterial("ground", scene);
+    groundMaterial.diffuseTexture = new BABYLON.Texture("/src/assets/map/bit_map.png", scene);
+    groundMaterial.specularColor = new BABYLON.Color3(0.1, 0.1, 0.1);
+    groundMaterial.emissiveColor = new BABYLON.Color3(1, 1, 1);
+    groundMaterial.ambientColor = new BABYLON.Color3(0.23, 0.98, 0.53);
+
+    const ground = BABYLON.MeshBuilder.CreateGroundFromHeightMap("12d3", "/src/assets/map/height_map.png", {
+      width: 20, height: 20, subdivisions: 250, maxHeight: 10, minHeight: 2
+    }, scene);
+
+    ground.material = groundMaterial;
+    ground.receiveShadows = true;
+  }
+
+  /**
+   * 创建天空盒子
+   * @param scene 地形对象
+   */
+  function createSkyBox(scene: BABYLON.Scene) {
+    var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", { size: 1000.0 }, scene);
+    var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+    skyboxMaterial.backFaceCulling = false;
+    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("src/assets/map/skybox/skybox", scene);
+    skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+    skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+    skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+    skybox.material = skyboxMaterial;
   }
 
   /**
